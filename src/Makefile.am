@@ -16,7 +16,7 @@ sisi4s_SOURCES =                                                 \
 ./NewData.cxx                                                    \
 ./algorithms/Algorithm.cxx                                       \
 ./Sisi4s.cxx                                                     \
-./Exit.cxx                                                     \
+./Exit.cxx                                                       \
 ./Options.cxx                                                    \
 ./DryTensor.cxx                                                  \
 ./Parser.cxx                                                     \
@@ -79,6 +79,8 @@ sisi4s_SOURCES +=                                                 \
 ./algorithms/TensorAntisymmetrizer.cxx                           \
 ./algorithms/FockMatrixFromCoulombIntegrals.cxx                  \
 ./algorithms/UccsdAmplitudesFromCoulombIntegrals.cxx             \
+./algorithms/UccsdtAmplitudesFromCoulombIntegrals.cxx            \
+./algorithms/UccsdtqAmplitudesFromCoulombIntegrals.cxx            \
 ./algorithms/MeanCorrelationHoleDepth.cxx                        \
 ./algorithms/CcsdEquationOfMotionDavidson.cxx                    \
 ./algorithms/PQRSCoulombIntegralsToVertex.cxx \

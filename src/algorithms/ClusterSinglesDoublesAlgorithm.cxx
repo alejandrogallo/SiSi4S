@@ -269,9 +269,9 @@ ClusterSinglesDoublesAlgorithm::createAmplitudes(
 template <typename F>
 void ClusterSinglesDoublesAlgorithm::storeAmplitudes(
     const PTR(const FockVector<F>) &amplitudes,
-    std::vector<std::string> const& names) {
+    std::vector<std::string> const &names) {
   int component(0);
-  for (auto const& name : names) {
+  for (auto const &name : names) {
     const auto new_name = name + "Amplitudes";
     if (out.present(new_name)) {
       out.set<Tensor<F> *>(new_name,

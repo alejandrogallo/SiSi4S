@@ -15,7 +15,6 @@
 using namespace sisi4s;
 
 void ClusterSinglesDoublesTriplesQuadruplesAlgorithm::run() {
-  double e(0.0);
   if (in.is_of_type<Tensor<double> *>("PPHHCoulombIntegrals")) {
     run<double>();
   } else {

@@ -1,14 +1,20 @@
-#include <algorithms/UccsdtAmplitudesFromCoulombIntegrals.hpp>
-#include <equations/SimilarityTransformedHamiltonian.hpp>
 #include <unistd.h>
+
+#include <Sisi4s.hpp>
+
+#include <algorithms/UccsdtAmplitudesFromCoulombIntegrals.hpp>
+#include <algorithms/UccsdAmplitudesFromCoulombIntegrals.hpp>
+
+#include <equations/SimilarityTransformedHamiltonian.hpp>
+
 #include <math/MathFunctions.hpp>
 #include <math/ComplexTensor.hpp>
 #include <math/RandomTensor.hpp>
+
 #include <util/Log.hpp>
 #include <util/Exception.hpp>
 #include <util/RangeParser.hpp>
 #include <util/Tensor.hpp>
-#include <Sisi4s.hpp>
 
 using namespace sisi4s;
 
@@ -19,52 +25,30 @@ using namespace sisi4s;
 #  define LDEBUG(msg)
 #endif
 
+using F = double;
+using FSPEC = double;
 DEFSPEC(
     UccsdtAmplitudesFromCoulombIntegrals,
     SPEC_IN(
-        {"hirataEquations", SPEC_VALUE_DEF("TODO: DOC", int64_t, 0)},
-        {"intermediates", SPEC_VALUE_DEF("TODO: DOC", int64_t, 1)},
-        {"withRingCCSDT", SPEC_VALUE_DEF("TODO: DOC", int64_t, 0)},
-        {"HoleEigenEnergies", SPEC_VARIN("TODO: DOC", Tensor<double> *)},
-        {"ParticleEigenEnergies", SPEC_VARIN("TODO: DOC", Tensor<double> *)},
-        {"HHFockMatrix", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"HHHHCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"HHHPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"HHPHCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"HHPHCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"HHPPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"HPFockMatrix", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"HPHHCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"HPHPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"HPPHCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"HPPHCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"HPPPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
+        UCCSD_SPEC_IN,
         {"NonAntiHHHPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
         {"NonAntiHHPPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
         {"NonAntiHPPPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
         {"NonAntiPHHPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"PHHPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"PHPHCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"PHPPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"PHPPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"PPFockMatrix", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"PPHHCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"PPHPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"PPPHCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"PPPHCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-        {"PPPPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)}),
-    SPEC_OUT());
+        {"hirataEquations", SPEC_VALUE_DEF("TODO: DOC", bool, false)},
+        {"withRingCCSDT", SPEC_VALUE_DEF("TODO: DOC", bool, false)}),
+    SPEC_OUT(UCCSD_SPEC_OUT));
 
 IMPLEMENT_ALGORITHM(UccsdtAmplitudesFromCoulombIntegrals) {
-  setIntegerArgument("antisymmetrize", 1);
-  setIntegerArgument("unrestricted", 1);
+  in.set<bool>("unrestricted", true);
+  in.set<bool>("antisymmetrize", true);
   ClusterSinglesDoublesTriplesAlgorithm::run();
 }
 
 PTR(FockVector<double>) UccsdtAmplitudesFromCoulombIntegrals::getResiduum(
     const int iterationStep,
     const PTR(const FockVector<double>) &amplitudes) {
-  return in.get<int64_t>("hirataEquations", 0) == 1
+  return in.get<bool>("hirataEquations")
            ? getResiduumTemplate<double>(iterationStep, amplitudes)
            : getResiduumSth<double>(iterationStep, amplitudes);
 }
@@ -73,7 +57,7 @@ PTR(FockVector<sisi4s::complex>)
 UccsdtAmplitudesFromCoulombIntegrals::getResiduum(
     const int iterationStep,
     const PTR(const FockVector<sisi4s::complex>) &amplitudes) {
-  return in.get<int64_t>("hirataEquations", 0) == 1
+  return in.get<bool>("hirataEquations")
            ? getResiduumTemplate<sisi4s::complex>(iterationStep, amplitudes)
            : getResiduumSth<sisi4s::complex>(iterationStep, amplitudes);
 }
@@ -86,8 +70,8 @@ PTR(FockVector<F>) UccsdtAmplitudesFromCoulombIntegrals::getResiduumSth(
   auto *epsi = in.get<Tensor<double> *>("HoleEigenEnergies"),
        *epsa = in.get<Tensor<double> *>("ParticleEigenEnergies");
 
-  const bool usingIntermediates = (bool)in.get<int64_t>("intermediates", 1),
-             withRingCCSDT = (bool)in.get<int64_t>("withRingCCSDT", 0);
+  const bool usingIntermediates = in.get<bool>("intermediates"),
+             withRingCCSDT = in.get<bool>("withRingCCSDT");
 
   if (!usingIntermediates) {
     LOG(0, getAbbreviation())
@@ -118,8 +102,8 @@ PTR(FockVector<F>) UccsdtAmplitudesFromCoulombIntegrals::getResiduumSth(
   int syms[] = {NS, NS};
   Tensor<F> *Fab, *Fij, *Fia;
 
-  if (isArgumentGiven("HPFockMatrix") && isArgumentGiven("HHFockMatrix")
-      && isArgumentGiven("PPFockMatrix")) {
+  if (in.present("HPFockMatrix") && in.present("HHFockMatrix")
+      && in.present("PPFockMatrix")) {
     if (iterationStep == 0) {
       LOG(0, getAbbreviation()) << "Using non-canonical orbitals" << std::endl;
     }
@@ -155,7 +139,7 @@ PTR(FockVector<F>) UccsdtAmplitudesFromCoulombIntegrals::getResiduumSth(
   auto Rabcijk(residuum->get(2));
   Rabcijk->set_name("Rabcijk");
 
-  if ((iterationStep == 0) && !isArgumentGiven("initialDoublesAmplitudes")) {
+  if ((iterationStep == 0) && !in.present("initialDoublesAmplitudes")) {
     LOG(1, getAbbreviation())
         << "Set initial Rabij amplitudes to Vijab" << std::endl;
     (*Rabij)["abij"] = (*Vijab)["ijab"];
@@ -271,8 +255,8 @@ PTR(FockVector<F>) UccsdtAmplitudesFromCoulombIntegrals::getResiduumTemplate(
   Tensor<F> *Fij(new Tensor<F>(2, oo, syms, *Sisi4s::world, "Fij"));
   Tensor<F> *Fia;
 
-  if (isArgumentGiven("HPFockMatrix") && isArgumentGiven("HHFockMatrix")
-      && isArgumentGiven("PPFockMatrix")) {
+  if (in.present("HPFockMatrix") && in.present("HHFockMatrix")
+      && in.present("PPFockMatrix")) {
     if (iterationStep == 0) {
       LOG(0, getAbbreviation()) << "Using non-canonical orbitals" << std::endl;
     }

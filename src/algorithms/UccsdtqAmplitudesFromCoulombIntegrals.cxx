@@ -1,13 +1,18 @@
-#include <algorithms/UccsdtqAmplitudesFromCoulombIntegrals.hpp>
 #include <unistd.h>
+
+#include <Sisi4s.hpp>
+
+#include <algorithms/UccsdtqAmplitudesFromCoulombIntegrals.hpp>
+#include <algorithms/UccsdAmplitudesFromCoulombIntegrals.hpp>
+
 #include <math/MathFunctions.hpp>
 #include <math/ComplexTensor.hpp>
 #include <math/RandomTensor.hpp>
+
 #include <util/Log.hpp>
 #include <util/Exception.hpp>
 #include <util/RangeParser.hpp>
 #include <util/Tensor.hpp>
-#include <Sisi4s.hpp>
 
 using namespace sisi4s;
 
@@ -18,37 +23,23 @@ using namespace sisi4s;
 #  define LDEBUG(msg)
 #endif
 
+using F = double;
+using FSPEC = double;
+DEFSPEC(
+    UccsdtqAmplitudesFromCoulombIntegrals,
+    SPEC_IN(UCCSD_SPEC_IN),
+    SPEC_OUT(UCCSD_SPEC_OUT));
 
-DEFSPEC(UccsdtqAmplitudesFromCoulombIntegrals,
-        SPEC_IN({"HoleEigenEnergies",
-                 SPEC_VARIN("TODO: DOC", Tensor<double> *)},
-                {"ParticleEigenEnergies",
-                 SPEC_VARIN("TODO: DOC", Tensor<double> *)},
-                {"HHFockMatrix", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-                {"HHHHCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-                {"HHHPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-                {"HHPHCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-                {"HHPPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-                {"HPFockMatrix", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-                {"HPHHCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-                {"HPHPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-                {"HPPHCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-                {"HPPPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-                {"PHPPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-                {"PPFockMatrix", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-                {"PPHHCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-                {"PPHPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-                {"PPPHCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
-                {"PPPPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)}),
-        SPEC_OUT());
 
 IMPLEMENT_ALGORITHM(UccsdtqAmplitudesFromCoulombIntegrals) {
+  in.set<bool>("unrestricted", true);
+  in.set<bool>("antisymmetrize", true);
   ClusterSinglesDoublesTriplesQuadruplesAlgorithm::run();
 }
 
-PTR(FockVector<complex>) UccsdtqAmplitudesFromCoulombIntegrals::getResiduum(
+PTR(FockVector<sisi4s::complex>) UccsdtqAmplitudesFromCoulombIntegrals::getResiduum(
     const int iterationStep,
-    const PTR(const FockVector<complex>) &amplitudes) {
+    const PTR(const FockVector<sisi4s::complex>) &amplitudes) {
   if (iterationStep == 0) {
     LOG(1, getAbbreviation())
         << "WARNING: Using complex version of Uccsdtq" << std::endl;
@@ -98,8 +89,8 @@ PTR(FockVector<F>) UccsdtqAmplitudesFromCoulombIntegrals::getResiduumTemplate(
   Tensor<F> *Fij(new Tensor<F>(2, oo, syms, *Sisi4s::world, "Fij"));
   Tensor<F> *Fia;
 
-  if (isArgumentGiven("HPFockMatrix") && isArgumentGiven("HHFockMatrix")
-      && isArgumentGiven("PPFockMatrix")) {
+  if (in.present("HPFockMatrix") && in.present("HHFockMatrix")
+      && in.present("PPFockMatrix")) {
     if (iterationStep == 0) {
       LOG(0, getAbbreviation()) << "Using non-canonical orbitals" << std::endl;
     }

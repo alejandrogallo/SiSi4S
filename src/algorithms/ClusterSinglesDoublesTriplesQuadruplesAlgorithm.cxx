@@ -14,22 +14,13 @@
 
 using namespace sisi4s;
 
-ClusterSinglesDoublesTriplesQuadruplesAlgorithm::
-    ~ClusterSinglesDoublesTriplesQuadruplesAlgorithm() {}
-
-ClusterSinglesDoublesTriplesQuadruplesAlgorithm::
-    ClusterSinglesDoublesTriplesQuadruplesAlgorithm(
-        std::vector<Argument> const &argumentList)
-    : ClusterSinglesDoublesAlgorithm(argumentList) {}
-
 void ClusterSinglesDoublesTriplesQuadruplesAlgorithm::run() {
   double e(0.0);
   if (in.is_of_type<Tensor<double> *>("PPHHCoulombIntegrals")) {
-    e = run<double>();
+    run<double>();
   } else {
-    e = std::real(run<complex>());
+    run<complex>();
   }
-  setRealArgument("Energy", e);
 }
 
 template <typename F>
@@ -46,7 +37,7 @@ F ClusterSinglesDoublesTriplesQuadruplesAlgorithm::run() {
                           {"ai", "abij", "abcijk", "abcdijkl"}));
 
   // create a mixer, by default use the linear one
-  std::string mixerName(in.get<std::string>("mixer", "LinearMixer"));
+  std::string mixerName(in.get<std::string>("mixer"));
   PTR(Mixer<F>) mixer(MixerFactory<F>::create(mixerName, this));
   if (!mixer) {
     std::stringstream stringStream;
@@ -55,8 +46,7 @@ F ClusterSinglesDoublesTriplesQuadruplesAlgorithm::run() {
   }
 
   // number of iterations for determining the amplitudes
-  int maxIterationsCount(
-      in.get<int64_t>("maxIterations", DEFAULT_MAX_ITERATIONS));
+  int maxIterationsCount(in.get<int64_t>("maxIterations"));
 
   F e(0);
   for (int i(0); i < maxIterationsCount; ++i) {

@@ -13,41 +13,25 @@
 #include <initializer_list>
 
 namespace sisi4s {
-/**
- * \brief Contains all the necessary tools for an algorithm with
- * singles, doubles and triples amplitudes.
- * It calculates the energy from the amplitudes
- * \f$T_{a}^{i}\f$, \f$T_{ab}^{ij}\f$ \f$T_{abc}^{ijk}\f$ and the Coulomb
- * integrals \f$V_{ij}^{ab}\f$.
- * For calculating the amplitudes it calls the iteration
- * routine of the actual algorithm.
- **/
+
+#define CLUSTER_SINGLES_DOUBLES_TRIPLES_QUADRUPLES_INSPEC                      \
+  CLUSTER_SINGLES_DOUBLES_TRIPLES_INSPEC, {                                    \
+    "initialTriplesAmplitudes", SPEC_VARIN("TODO: DOC", Tensor<F> *)           \
+  }
+
+#define CLUSTER_SINGLES_DOUBLES_TRIPLES_QUADRUPLES_OUTSPEC                     \
+  CLUSTER_SINGLES_DOUBLES_TRIPLES_OUTSPEC, {                                   \
+    "QuadruplesAmplitudes", SPEC_VAROUT("TODO: DOC", Tensor<F> *)              \
+  }
+
 class ClusterSinglesDoublesTriplesQuadruplesAlgorithm
     : public ClusterSinglesDoublesAlgorithm {
 
 public:
-  ClusterSinglesDoublesTriplesQuadruplesAlgorithm(
-      std::vector<Argument> const &argumentList);
-  virtual ~ClusterSinglesDoublesTriplesQuadruplesAlgorithm();
-  /**
-   * \brief Calculates the energy of a ClusterSinglesDoubles algorithm
-   */
+  using ClusterSinglesDoublesAlgorithm::ClusterSinglesDoublesAlgorithm;
+  virtual ~ClusterSinglesDoublesTriplesQuadruplesAlgorithm() {}
   virtual void run();
-
-  // TODO: dryRun
-
-  /**
-   * \brief Returns the abbreviation of the concrete algorithm, e.g. "Ccd",
-   * "Dcd".
-   */
   virtual std::string getAbbreviation() = 0;
-
-  /**
-   * \brief Defines the default number of iterations (16).
-   */
-  static int constexpr DEFAULT_MAX_ITERATIONS = 16;
-
-  static double constexpr DEFAULT_LEVEL_SHIFT = 0.0;
 
 protected:
   template <typename F>

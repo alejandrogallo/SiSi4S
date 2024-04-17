@@ -19,7 +19,7 @@ void ClusterSinglesDoublesTriplesAlgorithm::run() {
   if (in.is_of_type<Tensor<double> *>("PPHHCoulombIntegrals")) {
     run<double>();
   } else {
-    std::real(run<complex>());
+    run<complex>();
   }
 }
 

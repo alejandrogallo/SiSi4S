@@ -62,6 +62,7 @@ sisi4s_SOURCES +=                                                 \
 ./algorithms/CcsdPreconditioner.cxx                              \
 ./algorithms/HartreeFockFromCoulombIntegrals.cxx                 \
 ./algorithms/ClusterSinglesDoublesAlgorithm.cxx                  \
+./algorithms/ClusterSinglesDoublesTriplesQuadruplesAlgorithm.cxx \
 ./algorithms/CcsdEnergyFromCoulombIntegralsReference.cxx         \
 ./algorithms/CcsdEnergyFromCoulombIntegrals.cxx                  \
 ./algorithms/ClusterSinglesDoublesTriplesAlgorithm.cxx           \
@@ -109,7 +110,6 @@ sisi4s_SOURCES +=                                                 \
 ## ./algorithms/UccsdtAmplitudesFromCoulombIntegrals.cxx            \
 ## ./algorithms/TensorReduceijij.cxx                                \
 ## ./algorithms/CcsdDiagrammaticDecomposition.cxx                   \
-## ./algorithms/GenerateRandomComplexMatrix.cxx                     
 
 if DISABLE_LIBINT
 else

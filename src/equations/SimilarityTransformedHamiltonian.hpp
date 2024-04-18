@@ -120,6 +120,9 @@ public:
   // three body
   PTR(Tensor<F>) getABCIJK();
 
+  // four body
+  PTR(Tensor<F>) getABCDIJKL();
+
   // t amplitudes
   _DEFINE_SETTER(Tensor<F> *, Tai, nullptr);
   _DEFINE_SETTER(Tensor<F> *, Tabij, nullptr);
@@ -190,6 +193,9 @@ private:
 
       // three body
       Wabcijk,
+
+      // four body
+      Wabcdijkl,
 
       // intermediate quantities
       Tau_abij;

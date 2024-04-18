@@ -19,11 +19,11 @@ public:
   virtual void run();
   virtual std::string getAbbreviation() { return "Uccsdtq"; }
 
-protected:
   /**
    * \brief Implements the iterate method with the DRCCD iteration.
    * \param[in] i Iteration number
    */
+
   virtual PTR(FockVector<double>)
   getResiduum(const int iteration,
               const PTR(const FockVector<double>) &amplitudes);

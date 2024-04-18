@@ -48,6 +48,7 @@ sisi4s_SOURCES +=                                                 \
 ./equations/StantonIntermediatesUCCSD.cxx                        \
 ./equations/sthamiltonian/wabij.cxx                             \
 ./equations/sthamiltonian/wabcijk.cxx                           \
+./equations/sthamiltonian/wabcdijkl.cxx                           \
 ./equations/SimilarityTransformedHamiltonian.cxx                \
 ./algorithms/FromComplexTensor.cxx                               \
 ./algorithms/TensorNorm.cxx                                      \

@@ -208,6 +208,12 @@ PTR(Tensor<F>) SimilarityTransformedHamiltonian<F>::getABIJ() {
 
   } // end Wabij with Triples Tabcijk
 
+  // T4 quadruples part begin
+  if (Tabcdijkl) {
+    (*Wabij)["cdij"] += (+0.25) * (*Tabcdijkl)["efcdopij"] * (*Vijab)["opef"];
+  }
+  // T4 quadruples part end
+
   return Wabij;
 }
 

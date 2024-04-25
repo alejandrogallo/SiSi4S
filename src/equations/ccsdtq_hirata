@@ -6944,6 +6944,6 @@ LDEBUG((*Rabcdijkl)["efghijkl"] += (+1.0) * (*Tabij)["Agil"] * (*Tabij)["Bhkj"]
 #undef LDEBUG
 
 // Local Variables:
-// mod: C++
+// mode: C++
 // End:
 // vim:ft=cpp

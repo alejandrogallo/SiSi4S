@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <mpi.h>
 
 namespace sisi4s {

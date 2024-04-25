@@ -32,7 +32,7 @@ AlgorithmFactory::AlgorithmMap *AlgorithmFactory::algorithmMap;
 
 std::string AlgorithmFactory::normalize_name(std::string const &name) {
   std::vector<std::string> words;
-  const std::regex words_regex("[^\\s-_]+");
+  const std::regex words_regex("[^\\s_-]+");
   const auto words_begin =
                  std::sregex_iterator(name.begin(), name.end(), words_regex),
              words_end = std::sregex_iterator();

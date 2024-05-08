@@ -22,8 +22,12 @@ using F = double;
 using FSPEC = double;
 DEFSPEC(UccsdtqAmplitudesFromCoulombIntegrals,
         SPEC_IN(UCCSD_SPEC_IN,
+                {"InitialTriplesAmplitudes", SPEC_VAROUT("TODO: DOC", Tensor<F> *)},
+                {"InitialQuadruplesAmplitudes", SPEC_VAROUT("TODO: DOC", Tensor<F> *)},
                 {"hirataEquations", SPEC_VALUE_DEF("TODO: DOC", bool, false)}),
-        SPEC_OUT(UCCSD_SPEC_OUT));
+        SPEC_OUT(UCCSD_SPEC_OUT,
+                 {"TriplesAmplitudes", SPEC_VAROUT("TODO: DOC", Tensor<F> *)},
+                 {"QuadruplesAmplitudes", SPEC_VAROUT("TODO: DOC", Tensor<F> *)}));
 
 IMPLEMENT_ALGORITHM(UccsdtqAmplitudesFromCoulombIntegrals) {
   in.set<bool>("unrestricted", true);
@@ -90,6 +94,7 @@ PTR(FockVector<F>) UccsdtqAmplitudesFromCoulombIntegrals::getResiduumTemplate(
   } else {
     if (iterationStep == 0) {
       LOG(0, getAbbreviation()) << "Using hartree fock orbitals" << std::endl;
+      LOG(0, getAbbreviation()) << "whatever" << std::endl;
     }
     Fia = NULL;
     CTF::Transform<double, F>(std::function<void(double, F &)>(
@@ -97,6 +102,8 @@ PTR(FockVector<F>) UccsdtqAmplitudesFromCoulombIntegrals::getResiduumTemplate(
     CTF::Transform<double, F>(std::function<void(double, F &)>(
         [](double eps, F &f) { f = eps; }))((*epsa)["a"], (*Fab)["aa"]);
   }
+
+      LOG(0, getAbbreviation()) << "whatever2" << std::endl;
 
   // Create T and R and intermediates
   //
@@ -110,21 +117,41 @@ PTR(FockVector<F>) UccsdtqAmplitudesFromCoulombIntegrals::getResiduumTemplate(
   auto Tabcdijkl(amplitudes->get(3));
   Tabcdijkl->set_name("Tabcdijkl");
 
+  LOG(0, getAbbreviation()) << "whatever3" << std::endl;
+
+  LOG(0, getAbbreviation()) << "residduum" << std::endl;
   auto residuum(NEW(FockVector<F>, *amplitudes));
+  LOG(0, getAbbreviation()) << "before zeroing" << std::endl;
   *residuum *= 0.0;
+  LOG(0, getAbbreviation()) << "zeroing" << std::endl;
   auto Rai(residuum->get(0));
   Rai->set_name("Rai");
+  LOG(0, getAbbreviation()) << "Rai" << std::endl;
   auto Rabij(residuum->get(1));
   Rabij->set_name("Rabij");
+  LOG(0, getAbbreviation()) << "Rabij" << std::endl;
   auto Rabcijk(residuum->get(2));
   Rabcijk->set_name("Rabcijk");
-  auto Rabcdijkl(residuum->get(2));
+  LOG(0, getAbbreviation()) << "Rabcijk" << std::endl;
+  auto Rabcdijkl(residuum->get(3));
   Rabcdijkl->set_name("Rabcdijkl");
+  LOG(0, getAbbreviation()) << "Rabcijk" << std::endl;
+
+  LOG(0, getAbbreviation()) << "residuum" << std::endl;
+
+  if (iterationStep == 0) {
+    LOG(0, getAbbreviation()) << "Starting first iteration" << std::endl;
+    LOG(0, getAbbreviation()) << "Hirata equations " << in.get<bool>("hirataEquations") << std::endl;
+  }
+
 
   if (in.get<bool>("hirataEquations")) {
+    LOG(1, getAbbreviation())
+      << "Using Hirata equations without any kind of intermediates" << std::endl;
 #include <equations/ccsdtq_hirata>
   } else {
 
+    LOG(1, getAbbreviation()) << "Using intermediates" << std::endl;
     SimilarityTransformedHamiltonian<F> H(Fij->lens[0], Fab->lens[0]);
 
     H
@@ -159,6 +186,7 @@ PTR(FockVector<F>) UccsdtqAmplitudesFromCoulombIntegrals::getResiduumTemplate(
         ;
 
     // T1 equations:
+    LOG(1, getAbbreviation()) << "<AI|H|0>" << std::endl;
     auto Wai = H.getAI();
     (*Rai)["ai"] += (*Wai)["ai"];
     // These are the residum equations, we have to substract them from Wai
@@ -166,6 +194,7 @@ PTR(FockVector<F>) UccsdtqAmplitudesFromCoulombIntegrals::getResiduumTemplate(
     (*Rai)["bi"] += (+1.0) * (*Fij)["ki"] * (*Tai)["bk"];
 
     // T2 equations:
+    LOG(1, getAbbreviation()) << "<ABIJ|H|0>" << std::endl;
     auto Wabij = H.getABIJ();
     (*Rabij)["abij"] += (*Wabij)["abij"];
     // These are the residum equations, substract them from Wabij
@@ -175,6 +204,7 @@ PTR(FockVector<F>) UccsdtqAmplitudesFromCoulombIntegrals::getResiduumTemplate(
     (*Rabij)["cdij"] += (-1.0) * (*Fab)["cc"] * (*Tabij)["cdij"];
 
     // T3 equations:
+    LOG(1, getAbbreviation()) << "<ABCIJK|H|0>" << std::endl;
     auto Wabcijk = H.getABCIJK();
     (*Rabcijk)["abcijk"] += (*Wabcijk)["abcijk"];
     // These are the residum equations, substract them from Wabij
@@ -185,6 +215,7 @@ PTR(FockVector<F>) UccsdtqAmplitudesFromCoulombIntegrals::getResiduumTemplate(
     (*Rabcijk)["defijk"] += (+1.0) * (*Fab)["ee"] * (*Tabcijk)["edfijk"];
     (*Rabcijk)["defijk"] += (+1.0) * (*Fab)["dd"] * (*Tabcijk)["dfeijk"];
 
+    LOG(1, getAbbreviation()) << "<ABCDIJKL|H|0>" << std::endl;
     auto Wabcdijkl = H.getABCDIJKL();
     (*Rabcdijkl)["efghijkl"] +=
         (+1.0) * (*Fij)["Ii"] * (*Tabcdijkl)["efghIjkl"];

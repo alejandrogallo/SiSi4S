@@ -35,9 +35,11 @@ DEFSPEC(
         {"NonAntiHHPPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
         {"NonAntiHPPPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
         {"NonAntiPHHPCoulombIntegrals", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
+        {"initialTriplesAmplitudes", SPEC_VARIN("TODO: DOC", Tensor<F> *)}, \
         {"hirataEquations", SPEC_VALUE_DEF("TODO: DOC", bool, false)},
         {"withRingCCSDT", SPEC_VALUE_DEF("TODO: DOC", bool, false)}),
-    SPEC_OUT(UCCSD_SPEC_OUT));
+    SPEC_OUT(UCCSD_SPEC_OUT,
+             {"TriplesAmplitudes", SPEC_VAROUT("TODO: DOC", Tensor<F> *)}));
 
 IMPLEMENT_ALGORITHM(UccsdtAmplitudesFromCoulombIntegrals) {
   in.set<bool>("unrestricted", true);

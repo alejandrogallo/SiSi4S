@@ -22,8 +22,8 @@ using F = double;
 using FSPEC = double;
 DEFSPEC(UccsdtqAmplitudesFromCoulombIntegrals,
         SPEC_IN(UCCSD_SPEC_IN,
-                {"InitialTriplesAmplitudes", SPEC_VAROUT("TODO: DOC", Tensor<F> *)},
-                {"InitialQuadruplesAmplitudes", SPEC_VAROUT("TODO: DOC", Tensor<F> *)},
+                {"InitialTriplesAmplitudes", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
+                {"InitialQuadruplesAmplitudes", SPEC_VARIN("TODO: DOC", Tensor<F> *)},
                 {"hirataEquations", SPEC_VALUE_DEF("TODO: DOC", bool, false)}),
         SPEC_OUT(UCCSD_SPEC_OUT,
                  {"TriplesAmplitudes", SPEC_VAROUT("TODO: DOC", Tensor<F> *)},

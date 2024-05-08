@@ -1,6 +1,22 @@
-#define LDEBUG(eq)                                                             \
-  OUT() << __LINE__ << ":" << #eq << std::endl;                                \
+#if defined(DEBUG)
+double mpi_time = MPI_Wtime(), mpi_term_time;
+#define LDEBUG(eq)                              \
+  mpi_term_time = MPI_Wtime();                  \
+  eq;                                           \
+  do {                                          \
+    double now = MPI_Wtime();                   \
+    OUT() << __LINE__ << ":"                    \
+          << now - mpi_time                     \
+          << ":"                                \
+          << now - mpi_term_time                \
+          << ":" << #eq << std::endl;           \
+  } while (0)
+#else
+#define LDEBUG(eq)                              \
   eq
+#endif
+
+
 
 //(*Rai)["bi"] += ( - 1.0  ) * (*Fij)["ki"] * (*Tai)["bk"];
 //(*Rai)["bi"] += ( + 1.0  ) * (*Fab)["bc"] * (*Tai)["ci"];

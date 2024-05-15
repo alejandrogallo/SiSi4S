@@ -459,7 +459,7 @@ DEFSPEC(
         {"HoleEigenEnergies",
          SPEC_VARIN("TODO: DOC", Tensor<double> *)->require()},
         {"OrbitalCoefficients",
-         SPEC_VARIN("TODO: DOC", Tensor<double> *)->require()},
+         SPEC_VARIN("If you want to export directly the HHHH and PPHH integrals you can set the orbital coefficients here.", Tensor<double> *)},
         {"Spins", SPEC_VARIN("TODO: DOC", Tensor<double> *)}),
     SPEC_OUT(
         {"CoulombIntegrals", SPEC_VAROUT("TODO: DOC", Tensor<double> *)},
